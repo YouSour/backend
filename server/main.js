@@ -2,14 +2,16 @@ import { Meteor } from 'meteor/meteor';
 import { Accounts } from 'meteor/accounts-base';
 import { Messages, Assets } from '../imports/collections';
 
-Meteor.publish('messages', function() {
+Meteor.publish('messages', function () {
   if (this.userId) {
-    return Messages.find({}, {sort: { createdAt: 1 }});
+    return Messages.find({}, { sort: { createdAt: 1 } });
   }
   this.ready();
 });
 
-Meteor.publish(null, function() {
+
+
+Meteor.publish(null, function () {
   if (this.userId) {
     return Meteor.users.find({}, {
       fields: {
@@ -21,9 +23,9 @@ Meteor.publish(null, function() {
   this.ready();
 });
 
-Meteor.publish('assets', function(username) {
+Meteor.publish('assets', function (username) {
   if (this.userId) {
-    return Assets.find({owner: username});
+    return Assets.find({ owner: username });
   }
   this.ready();
 });
@@ -39,6 +41,15 @@ Meteor.methods({
       msg: msg,
       createdAt: new Date(),
     });
+  },
+  'getMessages'() {
+    console.log('call ...');
+    if (!this.userId) {
+      throw new Meteor.Error(401, 'Unauthorized');
+    }
+    var data = Messages.find({}).fetch();
+    console.log('data :::', data);
+    return data;
   },
   'clearAllMessages'() {
     if (!this.userId) {
@@ -77,7 +88,7 @@ try {
       surname: 'Seed',
     },
   });
-} catch (err) {}
+} catch (err) { }
 
 try {
   Accounts.createUser({
@@ -88,7 +99,7 @@ try {
       surname: 'Doe',
     },
   });
-} catch (err) {}
+} catch (err) { }
 
 Assets.remove({});
 Assets.insert({
